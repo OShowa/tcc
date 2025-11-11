@@ -22,6 +22,10 @@ func New(h hash.Hash, crud crud.Crud) SIS {
 	}
 }
 
+func (s *SIS) GetCrud() crud.Crud {
+	return s.crud
+}
+
 func (s *SIS) Create(pk pk.PK, blob []byte) error {
 
 	s.h.Write(blob)

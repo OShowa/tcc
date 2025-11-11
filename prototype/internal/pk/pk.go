@@ -2,6 +2,7 @@ package pk
 
 import (
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 )
@@ -11,6 +12,10 @@ type PK []string
 
 func New(path string) PK {
 	return strings.Split(path, string(os.PathSeparator))
+}
+
+func (pk PK) String() string {
+	return strings.Join(pk, string(filepath.Separator))
 }
 
 func (pk PK) Prefix(prefix PK) PK {

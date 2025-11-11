@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sis/internal/metrics"
 )
 
 type CrudOs struct {
@@ -162,4 +163,26 @@ func (c CrudOs) Exists(pk []string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (c CrudOs) SizeOf(key []string) (metrics.Byte, error) {
+	if len(key) == 0 {
+		return 0, fmt.Errorf("pk cannot be empty")
+	}
+
+	pkPath := c.pkToPath(key)
+	fileInfo, err := os.Stat(pkPath)
+	if err != nil {
+		return 0, fmt.Errorf("error retrieving pk info: %w", err)
+	}
+
+	if fileInfo.IsDir() {
+		dirInfo, err := metrics.MeasureDir(pkPath)
+		if err != nil {
+			return 0, fmt.Errorf("error measuring directory size: %w", err)
+		}
+		return dirInfo.Size(), nil
+	}
+
+	return metrics.Byte(fileInfo.Size()), nil
 }
